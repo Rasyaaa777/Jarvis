@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="JARVIS AI Personal Assistant - Realtime Analytics, Activity Logs & System Control Dashboard">
+  <title>JARVIS AI — Advanced Control & Analytics Dashboard</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --bg-card: rgba(13, 22, 38, 0.75);
+      --bg-card-hover: rgba(18, 30, 52, 0.85);
+      --border-cyan: rgba(0, 229, 255, 0.2);
+      --border-cyan-glow: rgba(0, 229, 255, 0.45);
+      --cyan-core: #00e5ff;
+      --cyan-bright: #33ecff;
+      --cyan-glow: rgba(0, 229, 255, 0.35);
+      --blue-accent: #0077fe;
+      --green-accent: #00e676;
+      --red-accent: #ff1744;
+      --yellow-accent: #ffd600;
+      --text-main: #f0f6fc;
+      --text-muted: #8b9bb4;
+      --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 119, 254, 0.08) 0%, transparent 40%),
+        linear-gradient(180deg, #05080e 0%, #090f1a 100%);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 24px;
+    }
+
+    /* Container */
+    .dashboard-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-cyan);
+      border-radius: 20px;
+      padding: 20px 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* Arc Reactor Glowing Icon */
+    .arc-reactor {
+      width: 52px;
+      height: 52px;
+      position: relative;
+      border-radius: 50%;
+      background: radial-gradient(circle, #021220 30%, #05263d 70%);
+      border: 2px solid var(--cyan-core);
+      box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 12px var(--cyan-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: reactor-pulse 3s infinite ease-in-out;
+    }
+
+    .arc-reactor::before {
+      content: '';
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 229, 255, 0.7);
+      animation: reactor-rotate 10s linear infinite;
+    }
+
+    .arc-reactor::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 15px var(--cyan-core), 0 0 25px var(--cyan-bright);
+    }
+
+    @keyframes reactor-pulse {
+      0%, 100% { box-shadow: 0 0 15px var(--cyan-glow), inset 0 0 10px var(--cyan-glow); }
+      50% { box-shadow: 0 0 28px rgba(0, 229, 255, 0.6), inset 0 0 18px rgba(0, 229, 255, 0.6); }
+    }
+
+    @keyframes reactor-rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .brand-title h1 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #ffffff 40%, var(--cyan-core) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.35);
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-accent);
+      box-shadow: 0 0 8px var(--green-accent);
+      animation: dot-blink 1.8s infinite;
+    }
+
+    @keyframes dot-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .provider-toggle {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px;
+      border-radius: 12px;
+      border: 1px solid var(--border-cyan);
+    }
+
+    .provider-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      transition: all 0.25s ease;
+    }
+
+    .provider-btn.active {
+      background: var(--cyan-core);
+      color: #03121b;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    }
+
+    .btn-refresh {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-core);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+    }
+
+    .btn-refresh:hover {
+      background: var(--cyan-core);
+      color: #03121b;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-cyan);
+      border-radius: 18px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--cyan-bright);
+      box-shadow: 0 12px 28px rgba(0, 229, 255, 0.15);
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--cyan-core), transparent);
+      opacity: 0.6;
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+    }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      letter-spacing: -0.5px;
+    }
+
+    .kpi-subtext {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Progress bar for budget */
+    .budget-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .budget-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan-core), var(--green-accent));
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Main Grid: Charts & Controls */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-cyan);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title-icon {
+      color: var(--cyan-core);
+    }
+
+    /* Interactive Quick Launcher */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .quick-tool-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      font-family: var(--font-family);
+      text-align: left;
+      transition: all 0.25s ease;
+    }
+
+    .quick-tool-btn:hover {
+      background: rgba(0, 229, 255, 0.08);
+      border-color: var(--cyan-bright);
+      transform: translateY(-2px);
+    }
+
+    .tool-btn-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cyan-core);
+    }
+
+    .tool-btn-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Chat Interactive Sandbox */
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-cyan);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #ffffff;
+      font-family: var(--font-family);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.25s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--cyan-core);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+    }
+
+    .chat-send-btn {
+      background: var(--cyan-core);
+      color: #04141e;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--cyan-bright);
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    .chat-response-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-main);
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Reminders List */
+    .reminders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .reminder-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .reminder-item:hover {
+      border-color: var(--border-cyan);
+    }
+
+    .reminder-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .reminder-msg {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .reminder-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .btn-cancel-rem {
+      background: rgba(255, 23, 68, 0.1);
+      border: 1px solid rgba(255, 23, 68, 0.3);
+      color: var(--red-accent);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel-rem:hover {
+      background: var(--red-accent);
+      color: #ffffff;
+    }
+
+    /* Activity Logs Table */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    td {
+      font-size: 13px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    tr:hover td {
+      background: rgba(0, 229, 255, 0.03);
+    }
+
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-ok {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--green-accent);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+
+    .badge-error {
+      background: rgba(255, 23, 68, 0.12);
+      color: var(--red-accent);
+      border: 1px solid rgba(255, 23, 68, 0.3);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 229, 255, 0.25);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan-core);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header>
+      <div class="brand-section">
+        <div class="arc-reactor" title="JARVIS Arc Reactor Online"></div>
+        <div class="brand-title">
+          <h1>JARVIS AI ASSISTANT</h1>
+          <p>Windows Desktop Neural Operator &bull; Realtime Analytics</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          <span id="system-status-text">SYSTEM ONLINE</span>
+        </div>
+
+        <div class="provider-toggle">
+          <button class="provider-btn active" id="btn-gemini" onclick="switchProvider('gemini')">GEMINI</button>
+          <button class="provider-btn" id="btn-openai" onclick="switchProvider('openai')">OPENAI</button>
+        </div>
+
+        <button class="btn-refresh" onclick="fetchDashboardData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total AI Calls</div>
+        <div class="kpi-value" id="kpi-calls">--</div>
+        <div class="kpi-subtext" id="kpi-calls-sub">0 successful</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Tool Success Rate</div>
+        <div class="kpi-value" id="kpi-tool-rate" style="color: var(--green-accent);">--%</div>
+        <div class="kpi-subtext" id="kpi-tool-calls">0 tool executions</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Average Latency</div>
+        <div class="kpi-value" id="kpi-latency" style="color: var(--yellow-accent);">-- ms</div>
+        <div class="kpi-subtext">Prompt to response speed</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Monthly Spend</div>
+        <div class="kpi-value" id="kpi-spend" style="color: var(--cyan-core);">$0.00</div>
+        <div class="budget-bar-container">
+          <div class="budget-bar-fill" id="budget-progress-bar"></div>
+        </div>
+        <div class="kpi-subtext" id="kpi-spend-sub">$0.00 / $5.00 limit (0%)</div>
+      </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Left: Charts -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">&#9670;</span>
+            Token Consumption & Cost Distribution
+          </div>
+        </div>
+        <div style="height: 280px; position: relative;">
+          <canvas id="usageChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Right: Quick Tool Sandbox & Prompt Tester -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">&#9670;</span>
+            Command & Prompt Sandbox
+          </div>
+        </div>
+
+        <div class="tools-grid">
+          <button class="quick-tool-btn" onclick="sendQuickPrompt('Halo JARVIS, sebutkan waktu dan status baterai PC saya')">
+            <span class="tool-btn-title">⚡ Status Sistem</span>
+            <span class="tool-btn-desc">Waktu &amp; persentase baterai</span>
+          </button>
+          <button class="quick-tool-btn" onclick="sendQuickPrompt('Buka Spotify')">
+            <span class="tool-btn-title">🎵 Buka Spotify</span>
+            <span class="tool-btn-desc">Jalankan pemutar musik</span>
+          </button>
+          <button class="quick-tool-btn" onclick="sendQuickPrompt('Bagaimana cuaca di Jakarta hari ini?')">
+            <span class="tool-btn-title">🌤 Cuaca Realtime</span>
+            <span class="tool-btn-desc">Suhu &amp; prakiraan cuaca</span>
+          </button>
+          <button class="quick-tool-btn" onclick="sendQuickPrompt('Cari di web berita teknologi terkini')">
+            <span class="tool-btn-title">🌐 Web Search</span>
+            <span class="tool-btn-desc">Cari berita terkini Bing</span>
+          </button>
+        </div>
+
+        <div class="chat-box">
+          <div class="chat-input-wrapper">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Ketik perintah atau tanya apa saja..." onkeypress="handleEnter(event)">
+            <button class="chat-send-btn" id="btn-send" onclick="sendChat()">Kirim</button>
+          </div>
+          <div class="chat-response-card" id="chat-response">
+            <em>Respon JARVIS akan muncul di sini...</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Row: Active Reminders & Activity Stream -->
+    <div class="content-grid">
+      <!-- Active Reminders -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">🔔</span>
+            Active Reminders (SQLite Persisted)
+          </div>
+          <button class="btn-refresh" style="padding: 4px 10px; font-size: 11px;" onclick="fetchReminders()">Muat Ulang</button>
+        </div>
+        <div class="reminders-list" id="reminders-container">
+          <div style="color: var(--text-muted); font-size: 13px;">Memuat daftar pengingat...</div>
+        </div>
+      </div>
+
+      <!-- Provider Stats Breakdown -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">&#9881;</span>
+            Engine Telemetry
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;" id="telemetry-info">
+          <div>Memuat telemetri...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Activity Logs -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="card-title-icon">&#9776;</span>
+          Recent Activity & Tool Interaction Logs
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Provider / Model</th>
+              <th>Tool Executed</th>
+              <th>Latency</th>
+              <th>Status</th>
+              <th>Cost (USD)</th>
+            </tr>
+          </thead>
+          <tbody id="logs-tbody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted);">Memuat riwayat log...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let usageChart = null;
+
+    async function fetchDashboardData() {
+      try {
+        const res = await fetch('/api/summary');
+        const data = await res.json();
+        
+        // Update KPIs
+        document.getElementById('kpi-calls').innerText = data.total_calls || 0;
+        document.getElementById('kpi-calls-sub').innerText = `${data.successful_calls || 0} ok • ${data.failed_calls || 0} fail`;
+        document.getElementById('kpi-tool-rate').innerText = `${data.tool_success_rate || 100}%`;
+        document.getElementById('kpi-tool-calls').innerText = `${data.tool_calls || 0} total eksekusi tool`;
+        document.getElementById('kpi-latency').innerText = `${Math.round(data.avg_latency || 0)} ms`;
+        
+        const budget = data.budget || {};
+        const spend = budget.current_month_spend || 0;
+        const maxBudget = budget.monthly_budget || 5.0;
+        const pct = budget.percentage || 0;
+        document.getElementById('kpi-spend').innerText = `$${spend.toFixed(4)}`;
+        document.getElementById('kpi-spend-sub').innerText = `$${spend.toFixed(4)} / $${maxBudget.toFixed(2)} (${pct}%)`;
+        document.getElementById('budget-progress-bar').style.width = `${Math.min(100, pct)}%`;
+
+        // Update active provider button
+        const activeProv = (data.active_provider || 'gemini').toLowerCase();
+        document.getElementById('btn-gemini').classList.toggle('active', activeProv === 'gemini');
+        document.getElementById('btn-openai').classList.toggle('active', activeProv === 'openai');
+
+        // Update telemetry
+        const tel = document.getElementById('telemetry-info');
+        const lastCall = data.last_call || {};
+        const providers = data.providers || {};
+        
+        let provHtml = '';
+        for (const [pName, pData] of Object.entries(providers)) {
+          provHtml += `
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+              <span style="font-weight: 600; color: var(--cyan-core);">${pName.toUpperCase()}</span>
+              <span>${pData.calls} calls &bull; ${pData.input_tokens.toLocaleString()} in / ${pData.output_tokens.toLocaleString()} out &bull; <strong style="color: var(--green-accent);">$${pData.cost.toFixed(5)}</strong></span>
+            </div>
+          `;
+        }
+
+        tel.innerHTML = `
+          <div><strong>Last API Call:</strong> ${lastCall.timestamp || '-'} (${(lastCall.provider || '-').toUpperCase()})</div>
+          <div><strong>Errors (Last 1 hr):</strong> <span style="color: ${data.errors_last_hour > 0 ? 'var(--red-accent)' : 'var(--green-accent)'};">${data.errors_last_hour}</span></div>
+          <div><strong>Total All-time Spend:</strong> <strong style="color: var(--green-accent);">$${(data.total_cost || 0).toFixed(4)}</strong></div>
+          <div style="margin-top: 8px;"><strong>Provider Breakdown:</strong></div>
+          ${provHtml}
+        `;
+
+        renderChart(providers);
+      } catch (err) {
+        console.error('Error fetching dashboard summary:', err);
+      }
+
+      fetchLogs();
+      fetchReminders();
+    }
+
+    function renderChart(providers) {
+      const labels = Object.keys(providers).map(p => p.toUpperCase());
+      const inTokens = Object.values(providers).map(p => p.input_tokens);
+      const outTokens = Object.values(providers).map(p => p.output_tokens);
+
+      const ctx = document.getElementById('usageChart').getContext('2d');
+      if (usageChart) {
+        usageChart.destroy();
+      }
+
+      usageChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.length ? labels : ['GEMINI', 'OPENAI'],
+          datasets: [
+            {
+              label: 'Input Tokens',
+              data: inTokens.length ? inTokens : [0, 0],
+              backgroundColor: 'rgba(0, 229, 255, 0.65)',
+              borderRadius: 6
+            },
+            {
+              label: 'Output Tokens',
+              data: outTokens.length ? outTokens : [0, 0],
+              backgroundColor: 'rgba(0, 119, 254, 0.65)',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#8b9bb4', font: { family: 'Outfit', size: 12 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#8b9bb4' }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#8b9bb4' }
+            }
+          }
+        }
+      });
+    }
+
+    async function fetchLogs() {
+      try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+        const logs = data.logs || [];
+        const tbody = document.getElementById('logs-tbody');
+
+        if (!logs.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Belum ada log interaksi.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => {
+          const ts = l.timestamp ? l.timestamp.replace('T', ' ').substring(0, 19) : '-';
+          const isOk = l.status === 'ok';
+          return `
+            <tr>
+              <td style="font-family: var(--font-mono); color: var(--text-muted);">${ts}</td>
+              <td style="font-weight: 600; color: var(--cyan-core);">${l.provider.toUpperCase()} <span style="font-size: 11px; color: var(--text-muted);">(${l.model})</span></td>
+              <td style="color: ${l.tool_called !== '-' ? 'var(--yellow-accent)' : 'var(--text-muted)'}; font-weight: ${l.tool_called !== '-' ? '600' : 'normal'};">${l.tool_called}</td>
+              <td style="font-family: var(--font-mono);">${Math.round(l.latency_ms)} ms</td>
+              <td><span class="badge-status ${isOk ? 'badge-ok' : 'badge-error'}">${l.status.toUpperCase()}</span></td>
+              <td style="font-family: var(--font-mono); color: var(--green-accent);">$${l.cost.toFixed(5)}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Error fetching logs:', err);
+      }
+    }
+
+    async function fetchReminders() {
+      try {
+        const res = await fetch('/api/reminders');
+        const data = await res.json();
+        const reminders = data.reminders || [];
+        const container = document.getElementById('reminders-container');
+
+        const activeReminders = reminders.filter(r => r.status === 'pending');
+        if (!activeReminders.length) {
+          container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">Tidak ada pengingat yang sedang aktif.</div>';
+          return;
+        }
+
+        container.innerHTML = activeReminders.map(r => {
+          const due = r.due_timestamp ? r.due_timestamp.replace('T', ' ').substring(0, 16) : '-';
+          return `
+            <div class="reminder-item">
+              <div class="reminder-info">
+                <span class="reminder-msg">${r.message}</span>
+                <span class="reminder-time">Jadwal: ${due} (ID: #${r.id})</span>
+              </div>
+              <button class="btn-cancel-rem" onclick="cancelReminder(${r.id})">Batalkan</button>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Error fetching reminders:', err);
+      }
+    }
+
+    async function cancelReminder(id) {
+      try {
+        await fetch('/api/reminders/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        fetchReminders();
+      } catch (err) {
+        alert('Gagal membatalkan pengingat: ' + err);
+      }
+    }
+
+    async function switchProvider(name) {
+      try {
+        const res = await fetch('/api/switch-provider', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider: name })
+        });
+        const data = await res.json();
+        fetchDashboardData();
+      } catch (err) {
+        alert('Gagal beralih provider: ' + err);
+      }
+    }
+
+    async function sendChat() {
+      const input = document.getElementById('chat-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const respCard = document.getElementById('chat-response');
+      respCard.innerHTML = '<em style="color: var(--cyan-core);">JARVIS is thinking...</em>';
+      input.value = '';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: val })
+        });
+        const data = await res.json();
+        respCard.innerText = data.response || 'Tidak ada respon.';
+        fetchDashboardData();
+      } catch (err) {
+        respCard.innerHTML = `<span style="color: var(--red-accent);">Error: ${err}</span>`;
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('chat-input').value = promptText;
+      sendChat();
+    }
+
+    function handleEnter(e) {
+      if (e.key === 'Enter') {
+        sendChat();
+      }
+    }
+
+    // Initial Load & Polling every 12 seconds
+    fetchDashboardData();
+    setInterval(fetchDashboardData, 12000);
+  </script>
+</body>
+</html>

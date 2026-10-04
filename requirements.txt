@@ -1,0 +1,15 @@
+openai
+google-genai
+python-dotenv
+rich
+rapidfuzz
+pywin32
+SpeechRecognition
+sounddevice
+numpy
+pyttsx3
+edge-tts
+requests
+beautifulsoup4
+pystray
+pillow

@@ -1,0 +1,19 @@
+# Pyrefly configuration for JARVIS project
+# Points Pyrefly to the correct Python interpreter and explicitly sets the
+# search path so it can resolve google.* namespace packages (which have no
+# __init__.py and are invisible to Pyrefly's default namespace-package resolution).
+
+python-interpreter = "C:\\Users\\rasya\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe"
+
+# Extra search roots so Pyrefly can walk into the google.* namespace packages.
+# The google/ dir itself is a namespace package (no __init__.py), so we also
+# add it directly so subpackages like google.genai are resolvable.
+search-path = [
+  "C:\\Users\\rasya\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages",
+  "C:\\Users\\rasya\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\google",
+]
+
+[errors]
+# Suppress missing-module-attribute for google namespace package — this is a
+# known Pyrefly limitation with PEP 420 namespace packages.
+missing-module-attribute = false
