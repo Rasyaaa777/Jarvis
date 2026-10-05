@@ -4,25 +4,71 @@ Asisten AI desktop berbasis Python untuk Windows yang dilengkapi pengenalan suar
 
 ---
 
-## 🚀 Quick Start (Cara Cepat Menjalankan)
+## 💻 Persyaratan Sistem & Instalasi di Device Baru
 
-1. **Jalankan Web Dashboard Interaktif:**
+Untuk menjalankan JARVIS di laptop atau komputer lain, Anda **HANYA memerlukan Python**:
+- ❌ **TIDAK butuh Node.js / npm** (Dashboard web murni menggunakan Vanilla HTML/JS yang disajikan langsung oleh Python internal).
+- ✅ **Sistem Operasi:** Windows 10 atau Windows 11 (64-bit).
+- ✅ **Python:** Versi **3.10 - 3.14** (Wajib centang **"Add python.exe to PATH"** saat instalasi).
+- ✅ **Hardware:** Mikrofon, Speaker, dan Koneksi Internet aktif.
+
+---
+
+### 📦 Langkah Instalasi di Device Lain:
+
+1. **Clone repository ini atau salin folder proyek:**
+   ```powershell
+   git clone https://github.com/Rasyaaa777/Jarvis.git
+   cd Jarvis
+   ```
+
+2. **(Direkomendasikan) Buat & Aktifkan Virtual Environment:**
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+
+3. **Install semua dependensi Python (Cukup 1 baris):**
+   ```powershell
+   pip install -r requirements.txt
+   ```
+   *(Perintah ini akan otomatis mengunduh seluruh 15 library inti beserta paket pendukungnya).*
+
+4. **Konfigurasi API Key (.env):**
+   Salin file `.env.example` menjadi `.env`, lalu masukkan API Key Anda:
+   ```powershell
+   copy .env.example .env
+   ```
+   Buka file `.env` dan isi kunci:
+   ```ini
+   GEMINI_API_KEY=AIzaSy...
+   OPENAI_API_KEY=sk-...
+   ACTIVE_PROVIDER=gemini
+   ```
+
+---
+
+## 🚀 Quick Start (Cara Menjalankan)
+
+Setelah dependensi terpasang, pilih salah satu mode berikut:
+
+1. **Web Dashboard Interaktif (Lengkap dengan UI Chat & Kontrol):**
    ```powershell
    python main.py web
    ```
    *(Browser akan terbuka otomatis di `http://127.0.0.1:5050`)*
 
-2. **Jalankan Mode Suara ("Hey Jarvis"):**
+2. **Mode Suara / Wake-Word ("Hey Jarvis"):**
    ```powershell
    python main.py wake
    ```
 
-3. **Jalankan Mode Chat Teks:**
+3. **Mode Chat Teks Terminal:**
    ```powershell
    python main.py text
    ```
 
-4. **Buka Dashboard Metrik & Log di Terminal:**
+4. **Dashboard Log & Metrik di Terminal (Rich CLI):**
    ```powershell
    python main.py dashboard
    ```
@@ -34,17 +80,16 @@ Asisten AI desktop berbasis Python untuk Windows yang dilengkapi pengenalan suar
 
 ---
 
-## 📖 Dokumentasi Lengkap & Tutorial Pindah Device
+## 🛠️ Fitur Utama
+- **Multi-Provider AI Router:** Otomatis switch antara Google Gemini (`gemini-3.1-flash-lite`) dan OpenAI (`gpt-4o-mini`) dengan fitur auto-fallback.
+- **Peluncur Aplikasi Cerdas:** Membuka aplikasi desktop standar, Chrome/Edge PWA (Spotify, CapCut), hingga Windows Store UWP Apps via *fuzzy matching*.
+- **Pengingat Mandiri & Persisten (SQLite WAL):** Pengingat tersimpan di database lokal dan tetap berdering tepat waktu walau aplikasi sempat ditutup.
+- **Pencarian Web Multi-Engine:** Bing Search + Wikipedia bahasa Indonesia secara otomatis saat AI membutuhkan data terkini.
+- **Suara Manusia Neural:** Menggunakan Edge TTS suara bahasa Indonesia jernih (`id-ID-ArdiNeural`).
+- **Audit Penggunaan & Biaya:** Real-time tracking latensi, token input/output, dan estimasi biaya per request.
 
-Penjelasan mendalam tentang **cara kerja arsitektur program**, diagram alur, fungsi tiap folder, serta **tutorial langkah-demi-langkah memasang JARVIS di komputer/laptop lain** dapat dibaca di:
-
-👉 **[PANDUAN_DAN_CARA_KERJA.md]**
 ---
 
-## 🛠️ Fitur Utama
-- **Multi-Provider AI Router:** Otomatis switch antara Google Gemini (`gemini-3.1-flash-lite`) dan OpenAI (`gpt-4o-mini`).
-- **Peluncur Aplikasi Cerdas:** Mendukung aplikasi desktop standar, Chrome/Edge PWA (Spotify, CapCut), dan Windows Store UWP Apps.
-- **Pengingat Persisten (SQLite):** Pengingat tersimpan di database lokal mode WAL dan tetap berdering saat jatuh tempo walau aplikasi sempat ditutup.
-- **Pencarian Web Multi-Engine:** Bing Search + Wikipedia bahasa Indonesia dengan auto-fallback.
-- **Suara Manusia Neural:** Menggunakan Edge TTS suara bahasa Indonesia jernih (`id-ID-ArdiNeural`).
-- **Audit Penggunaan & Biaya:** Pencatatan latensi, token input/output, dan perkiraan biaya setiap permintaan.
+## 📚 Dokumentasi Terkait
+- 📖 [PANDUAN_DAN_CARA_KERJA.md](./PANDUAN_DAN_CARA_KERJA.md) - Dokumentasi komprehensif arsitektur hulu-ke-hilir, diagram alur, dan cara kerja setiap modul.
+- 📦 [INSTALLED_PACKAGES.md](./INSTALLED_PACKAGES.md) - Rincian lengkap seluruh library Python dan package sistem yang digunakan.
